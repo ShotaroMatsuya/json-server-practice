@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON SERVER</title>
+    <style>
+        .btn {
+            border: 1px solid black;
+            padding: 3px;
+            display: inline-block;
+            width: 100px;
+            text-align: center;
+
+        }
+
+        .hide {
+            display: none;
+        }
+
+        form {
+            background-color: aliceblue;
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>JSON Server AJAX testing</h1>
+    <div id="message"></div>
+    <div id="load1" class="btn hide">load 1</div>
+    <div id="send1" class="btn hide">send 1</div>
+
+    <div id="pageInfo"></div>
+    <div id="prev" class="btn">Prev</div>
+    <div id="next" class="btn">Next</div>
+
+    <form id="myForm">
+        <input type="text" name="first" value="Jason">
+        <input type="text" name="last" value="tester">
+        <input type="text" name="company" value="ACME">
+        <input type="submit" value="Send Data">
+    </form>
+
+    <input type="text" name="search"><button class="btn" id="search">Search</button><br>
+    <div id="output"></div><br>
+    <textarea id="comments"></textarea><button class="btn" id="addComment">Add
+        Comment</button><br>
+
+
+
+
+    <script>
+        // var load1 = document.querySelector("#load1");
+        // var send1 = document.querySelector("#send1");
+
+        // load1.addEventListener('click', function () {
+        //     makeRequest('http://localhost:3000/posts', 'GET', {});
+
+        // });
+        // send1.addEventListener('click', function () {
+        //     makeRequest('http://localhost:3000/posts', 'POST', 'first=John&last=Jason&company=Whatever');
+
+        // });
+        class JsonServer {
+            constructor() {
+                const message = document.getElementById('message');
+                this.output = document.getElementById('output');
+                this.currentId = 1;
+
+                this.events();
+
+            }
+            events() {
+                document.getElementById('prev').addEventListener('click', () => {
+                    this.currentId--;
+                    this.loadPage();
+                });
+                document.getElementById('next').addEventListener('click', () => {
+                    this.currentId++;
+                    this.loadPage();
+                });
+                document.getElementById('myForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                });
+                document.getElementById('search').addEventListener('click', () => {});
+                document.getElementById('addComment').addEventListener('click', () => {});
+            }
+            loadPage() {
+                console.log('Build Page');
+                this.output.innerHTML = '';
+                fetch(`http://localhost:3000/posts?id=${this.currentId}`, {
+                        method: 'GET'
+                    })
+                    .then(result => {
+                        return result.json();
+                    }).then(data => {
+                        for (let key in data[0]) {
+                            console.log(key, data[0][key]);
+                            this.output.innerHTML += '<b>' + key + '</b>:' + data[0][key] + '<br>';
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                    });
+            }
+            makeGet(url) {
+                fetch(url).then(result => {
+                    console.log(result);
+                    return result.json();
+                }).then(data => {
+                    console.log(data);
+                }).catch(err => {
+                    console.log(err);
+                })
+            }
+            makePost(url, data) {
+                fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: data
+                    }).then(result => {
+                        console.log(result);
+                        return result.json();
+                    }).then(data => {
+                        const myObj = JSON.parse(data);
+                        for (let key in myObj) {
+                            console.log(key, myObj[key]);
+                        }
+
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+
+            }
+
+        }
+        const json_server = new JsonServer();
+    </script>
+</body>
+
+</html>

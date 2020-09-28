@@ -1,0 +1,64 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "first": "shotaro",
+      "last": "matsuya",
+      "company": "testing"
+    },
+    {
+      "id": 2,
+      "first": "taro",
+      "last": "yamada",
+      "company": "my Company"
+    },
+    {
+      "id": 3,
+      "first": "takeshi",
+      "last": "sato",
+      "company": "my Company"
+    },
+    {
+      "id": 4
+    },
+    {
+      "id": 5
+    },
+    {
+      "id": 6
+    },
+    {
+      "id": 7
+    },
+    {
+      "first": "John",
+      "last": "Jason",
+      "company": "Whatever",
+      "id": 8
+    },
+    {
+      "title": "My second Post!",
+      "content": "This is the content of my second post.",
+      "id": 9
+    },
+    {
+      "title": "My second Post!",
+      "content": "This is the content of my second post.",
+      "id": 10
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "first": "some comment",
+      "last": 1,
+      "company": ""
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "test": {
+    "whatever": "Hello World"
+  }
+}
