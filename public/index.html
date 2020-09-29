@@ -36,6 +36,7 @@
     <div id="pageInfo"></div>
     <div id="prev" class="btn">Prev</div>
     <div id="next" class="btn">Next</div>
+    <div id="output"></div><br>
 
     <form id="myForm">
         <input type="text" name="first" value="Jason">
@@ -45,7 +46,6 @@
     </form>
 
     <input type="text" name="search"><button class="btn" id="search">Search</button><br>
-    <div id="output"></div><br>
     <textarea id="comments"></textarea><button class="btn" id="addComment">Add
         Comment</button><br>
 
@@ -66,8 +66,9 @@
         // });
         class JsonServer {
             constructor() {
-                const message = document.getElementById('message');
+                this.message = document.getElementById('message');
                 this.output = document.getElementById('output');
+                this.comments = document.getElementById('comments');
                 this.currentId = 1;
 
                 this.events();
@@ -84,9 +85,59 @@
                 });
                 document.getElementById('myForm').addEventListener('submit', (e) => {
                     e.preventDefault();
+                    const first = document.querySelector('input[name="first"]').value;
+                    const last = document.querySelector('input[name="last"]').value;
+                    const company = document.querySelector('input[name="company"]').value;
+                    console.log(first, last, company);
+
+                    const data = `first=${first}&last=${last}&company=${company}`;
+                    this.makePost('http://localhost:3000/posts', data);
                 });
-                document.getElementById('search').addEventListener('click', () => {});
-                document.getElementById('addComment').addEventListener('click', () => {});
+                document.getElementById('search').addEventListener('click', () => {
+
+                    const search = document.querySelector('input[name="search"').value;
+                    this.makeGet('http://localhost:3000/posts?q=' + search);
+
+
+
+
+                });
+                document.getElementById('addComment').addEventListener('click', () => {
+                    const value = this.comments.value;
+                    const data = 'postId=' + this.currentId + '&body=' + value;
+                    fetch('http://localhost:3000/comments', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: data
+                    }).then(results => {
+                        return results.json();
+
+                    }).then(data => {
+                        this.output.innerHTML += `<b>${data.id}</b> : ${data.body} <br>`;
+
+                    }).catch(err => {
+                        console.log(err);
+                    })
+
+
+                });
+            }
+            loadComments() {
+                console.log('work');
+                this.output.innerHTML += '<p>Comments</p>';
+                fetch('http://localhost:3000/comments?postId=' + this.currentId).then(results => {
+                    return results.json();
+                }).then(data => {
+                    for (let i = 0; i < data.length; i++) {
+                        this.output.innerHTML += `<b>${data[i].id}</b> : ${data[i].body} <br>`;
+                    }
+
+                }).catch(err => {
+                    console.log(err);
+                });
+
             }
             loadPage() {
                 console.log('Build Page');
@@ -98,9 +149,9 @@
                         return result.json();
                     }).then(data => {
                         for (let key in data[0]) {
-                            console.log(key, data[0][key]);
                             this.output.innerHTML += '<b>' + key + '</b>:' + data[0][key] + '<br>';
                         }
+                        this.loadComments();
                     }).catch(err => {
                         console.log(err);
                     });
@@ -110,7 +161,14 @@
                     console.log(result);
                     return result.json();
                 }).then(data => {
-                    console.log(data);
+                    this.output.innerHTML = '';
+
+                    for (let i = 0; i < data.length; i++) {
+
+
+                        this.output.innerHTML += '<b>' + data[i].first + ' ' + data[i].last + '</b> : ' +
+                            data[i].id + '<br>';
+                    }
                 }).catch(err => {
                     console.log(err);
                 })
@@ -123,12 +181,13 @@
                         },
                         body: data
                     }).then(result => {
-                        console.log(result);
+
                         return result.json();
                     }).then(data => {
-                        const myObj = JSON.parse(data);
-                        for (let key in myObj) {
-                            console.log(key, myObj[key]);
+                        this.message.innerHTML = JSON.stringify(data);
+
+                        for (let key in data) {
+                            console.log(key, data[key]);
                         }
 
                     })
